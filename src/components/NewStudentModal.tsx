@@ -18,7 +18,8 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
     grade: '10',
     academicYear: '2026-27',
     joiningInstallment: '1',
-    paymentDate: '', // New field for selecting payment date
+    admissionDate: format(new Date(), 'yyyy-MM-dd'), // Default to today
+    isInitialPaid: true, // Auto-record first payment
     remarks: ''
   });
 
@@ -47,15 +48,15 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
     let totalPaid = 0;
     let pendingBalance = initialPending;
 
-    // If payment date is selected, record the first installment as paid
-    if (formData.paymentDate) {
+    // Record the first installment as paid on the Admission Date
+    if (formData.isInitialPaid && formData.admissionDate) {
         const amountToPay = feeStructure.installments[joiningInstallment - 1];
-        const receiptId = `AA-${format(new Date(formData.paymentDate), 'yyMM')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        const receiptId = `AA-${format(new Date(formData.admissionDate), 'yyMM')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
         
         paymentHistory.push({
             receiptId,
             installmentNumber: joiningInstallment,
-            datePaid: new Date(formData.paymentDate).toISOString(),
+            datePaid: new Date(formData.admissionDate).toISOString(),
             amount: amountToPay
         });
 
@@ -69,6 +70,7 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
       grade,
       academicYear: formData.academicYear,
       joiningInstallment,
+      admissionDate: formData.admissionDate,
       feeStructure,
       paymentHistory,
       status: pendingBalance === 0 ? 'Fully Paid' : totalPaid > 0 ? 'Partial Paid' : 'Pending',
@@ -157,6 +159,17 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
             </div>
 
             <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Admission Date</label>
+              <input
+                required
+                type="date"
+                className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none text-base font-semibold"
+                value={formData.admissionDate}
+                onChange={e => setFormData({...formData, admissionDate: e.target.value})}
+              />
+            </div>
+
+            <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Joining Installment</label>
               <select
                 className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none cursor-pointer text-base font-semibold"
@@ -169,14 +182,19 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
               </select>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Payment Date (Optional)</label>
-              <input
-                type="date"
-                className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none text-base font-semibold"
-                value={formData.paymentDate}
-                onChange={e => setFormData({...formData, paymentDate: e.target.value})}
-              />
+            <div className="col-span-1 md:col-span-2">
+              <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex items-center">
+                <input
+                  type="checkbox"
+                  id="isInitialPaid"
+                  className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                  checked={formData.isInitialPaid}
+                  onChange={e => setFormData({...formData, isInitialPaid: e.target.checked})}
+                />
+                <label htmlFor="isInitialPaid" className="ml-3 text-sm font-semibold text-blue-800 cursor-pointer">
+                  Mark first installment as paid on admission date
+                </label>
+              </div>
             </div>
 
             <div className="col-span-1 md:col-span-2">

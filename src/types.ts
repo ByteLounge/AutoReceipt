@@ -14,6 +14,7 @@ export interface Student {
   grade: number; 
   academicYear: string; 
   joiningInstallment: number; 
+  admissionDate: string; // New field for Date of Admission
   
   feeStructure: {
     annualFees: number;
