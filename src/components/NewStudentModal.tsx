@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useStudents } from '../hooks/useStudents';
 import { X, UserPlus } from 'lucide-react';
-import type { Student } from '../types';
+import type { Student, PaymentReceipt } from '../types';
+import { format } from 'date-fns';
 
 interface Props {
   onClose: () => void;
@@ -17,6 +18,7 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
     grade: '10',
     academicYear: '2026-27',
     joiningInstallment: '1',
+    paymentDate: '', // New field for selecting payment date
     remarks: ''
   });
 
@@ -41,6 +43,26 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
         initialPending += feeStructure.installments[i];
     }
 
+    const paymentHistory: PaymentReceipt[] = [];
+    let totalPaid = 0;
+    let pendingBalance = initialPending;
+
+    // If payment date is selected, record the first installment as paid
+    if (formData.paymentDate) {
+        const amountToPay = feeStructure.installments[joiningInstallment - 1];
+        const receiptId = `AA-${format(new Date(formData.paymentDate), 'yyMM')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        
+        paymentHistory.push({
+            receiptId,
+            installmentNumber: joiningInstallment,
+            datePaid: new Date(formData.paymentDate).toISOString(),
+            amount: amountToPay
+        });
+
+        totalPaid = amountToPay;
+        pendingBalance = initialPending - amountToPay;
+    }
+
     const newStudent: Omit<Student, 'id' | 'createdAt'> = {
       fullName: formData.fullName,
       mobileNumber: formData.mobileNumber,
@@ -48,10 +70,10 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
       academicYear: formData.academicYear,
       joiningInstallment,
       feeStructure,
-      paymentHistory: [],
-      status: initialPending > 0 ? 'Pending' : 'Fully Paid',
-      pendingBalance: initialPending,
-      totalPaid: 0,
+      paymentHistory,
+      status: pendingBalance === 0 ? 'Fully Paid' : totalPaid > 0 ? 'Partial Paid' : 'Pending',
+      pendingBalance,
+      totalPaid,
       remarks: formData.remarks
     };
 
@@ -145,6 +167,16 @@ const NewStudentModal: React.FC<Props> = ({ onClose }) => {
                 <option value="2">2nd Installment</option>
                 {formData.grade !== '10' && <option value="3">3rd Installment</option>}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Payment Date (Optional)</label>
+              <input
+                type="date"
+                className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none text-base font-semibold"
+                value={formData.paymentDate}
+                onChange={e => setFormData({...formData, paymentDate: e.target.value})}
+              />
             </div>
 
             <div className="col-span-1 md:col-span-2">
