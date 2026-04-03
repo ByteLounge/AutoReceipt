@@ -16,7 +16,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = (password: string) => {
-    if (password === 'admin123') { // Simple password for now as requested
+    if (password === '220478') { // Updated access code as per user
       setIsAuthenticated(true);
       localStorage.setItem('achievers_auth', 'true');
       return true;
