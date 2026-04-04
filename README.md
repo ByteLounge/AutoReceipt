@@ -4,6 +4,13 @@ A professional Tuition Fee Management System and automated Receipt Generator des
 
 ![Achiever's Academy Logo](public/logo.png)
 
+<img width="1918" height="873" alt="Screenshot 2026-04-04 125822" src="https://github.com/user-attachments/assets/6267dcc6-2a88-478e-992c-7ae7970fd02f" />
+
+<img width="1919" height="867" alt="Screenshot 2026-04-04 125839" src="https://github.com/user-attachments/assets/5382b818-e1ff-4d4c-b2e4-9f09433f7e7e" />
+
+<img width="1919" height="867" alt="Screenshot 2026-04-04 125850" src="https://github.com/user-attachments/assets/77c53712-501e-42a0-8ad8-0f7201c84cb3" />
+
+
 ## 🚀 Features
 
 - **Student Management**: Easy-to-use interface for student admissions and record keeping.
